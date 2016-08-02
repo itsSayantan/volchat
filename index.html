@@ -9,7 +9,8 @@
 	<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
-        var socketio = io.connect("127.0.0.1:3000");
+    	var port = process.env.PORT || 3000;
+        var socketio = io.connect("127.0.0.1:"+port);
 
         socketio.on("avail_stat", function(data) {
 		    document.getElementById("available").innerHTML = data['message'];
