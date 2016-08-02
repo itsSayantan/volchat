@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<meta name = "description" content = "VolChat is a simple chat application which uses node.js. This chat application can be easily implemented. This chat application does not store messages.">
+	<title>VolChat - Home</title>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script type="text/javascript" src = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var socketio = io.connect("127.0.0.1:3000");
+
+        socketio.on("avail_stat", function(data) {
+		    document.getElementById("available").innerHTML = data['message'];
+		});
+
+        $(document).ready(function(){
+        	$("#uname_sub").on("click", function() {
+			    var uname = document.getElementById("user_name").value;
+			    socketio.emit("avail_stat_chk", { "uname_msg" : uname});
+			    document.getElementById("user_name").value = "";
+			});
+       	});
+    </script>
+</head>
+<body>
+	<div class = "container">
+		<div class = "alert alert-info">
+			<p><b>VolChat</b> is a free and open source chatting application that can be easily integrated on a website. This application <b>does not</b> store any chat data.</p>
+			<a href="https://github.com/itsSayantan"><button type = "button" class = "btn btn-primary">Sayantan Ghosh</button></a>
+			<a href="https://github.com/itsSayantan/volchat"><button type = "button" class = "btn btn-primary">Github Link</button></a>
+		</div>
+		<div class = "jumbotron">
+			<h2>Example Chat</h2>
+			<div class = "form">
+				<div class = "form-group">
+					<label for = "user_name">Username</label>
+					<input type = "text" id = "user_name" class = "form-control" placeholder = "Enter Username">
+				</div>
+				<button type = "submit" id = "uname_sub" class = "btn btn-default">Check Availability</button>
+			</div>
+			<span id = "available">Type a username and check if it is available.</span>
+		</div>
+	</div>
+</body>
+</html>
