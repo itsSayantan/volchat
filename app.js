@@ -2,34 +2,32 @@ var http = require("http"),
 	fs = require("fs"),
 	un = [],
 	uTaken=0,
+    loggedIn = 0,
     port = process.env.PORT || 3000;
 
 function onRequest(request, response) {
-    fs.readFile("index.html", 'utf-8', function (error, data) {
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write(data);
-        response.end();
-    });
+    if(request.method == "GET" && request.url == "/chat"){
+        fs.readFile("chat.html", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.write(data);
+            response.end();
+        });
+    }else if(request.method == "GET" && request.url == "/"){
+        fs.readFile("index.html", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.write(data);
+            response.end();
+        });
+    }else{
+        fs.readFile("error404.html", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.write(data);
+            response.end();
+        });
+    }
 }
 
 /* Utility functions */
-
-function hasWhiteSpace(str) {
-	return /\s/g.test(str);
-}
-
-function hasLowerCaseNum(str) {
-
-	var lowCaseTest = /[a-z]/;
-	var numTest = /[0-9]/;
-
-	for (var i = 0; i < str.length; i++) {
-		if(!lowCaseTest.test(str[i]) && !numTest.test(str[i])){
-			return 0;
-		}
-	};
-    return 1;
-}
 
 function htmlencode(str) {
     return str.replace(/[&<>"']/g, function($0) {
@@ -44,41 +42,48 @@ var app = http.createServer(onRequest).listen(port);
 var io = require('socket.io').listen(app);
  
 io.sockets.on('connection', function(socket) {
+
+    var uname = "A user";
+
+    console.log(uname + " connected");
+
     socket.on('avail_stat_chk', function(data) {
 
-    	var uname = data["uname_msg"],
-    		msg;
+        var msg;
+        uname = data["uname"];
 
-    	if(uname.length == 0){
-    		msg = "Username mandatory";
-    	}else{
-    		if(hasWhiteSpace(uname)){
-    			msg = "Username cannot have white spaces."
-    		}else{
-    			if(!hasLowerCaseNum(uname)){
-    				msg = "Username should only contain lower case alphabets."
-    			}else{
-    				uname = htmlencode(uname);
-    				for (var i = 0; i < un.length; i++) {
-    					if(uname == un[i]){
-    						uTaken = 1;
-    						break;
-    					}
-    				};
-    				if(uTaken){
-    					msg = uname+": is taken. Try another username";
-    					uTaken = 0;
-    				}else{
-    					un.push(uname);
-    					msg = "Username successfully created: "+uname;
-    				}
-    			}
-    		}
-    	}
+        socket.join(uname);
 
-        io.sockets.emit("avail_stat",{ "message": msg });
+        uname = htmlencode(uname);
+        for (var i = 0; i < un.length; i++) {
+                if(uname == un[i]){
+                uTaken = 1;
+                break;
+            }
+        };
+        if(uTaken){
+            msg = "<span style = 'color:red;'>"+uname+"</span> is taken. Try again.<div>If you are already logged in with this id, then you are probably receiving this message because someone else is trying to log in with this id. Please ignore.</div>";
+            uTaken = 0;
+            io.sockets.in(uname).emit("avail_stat",{ "message": msg });
+        }else{
+            un.push(uname);
+            msg = "Username successfully created: <span style = 'color:green;'>"+uname+"</span>";
+            io.sockets.in(uname).emit("loggedin_event_fetch",{"msg": "loggedin"});
+            io.sockets.in(uname).emit("avail_stat",{ "message": msg });
+        }
+    });
+
+    socket.on('disconnect', function(data) {
+        if(uname != "A user"){
+            un.splice(un.indexOf(data["uname"]), 1);
+        }
+        console.log(uname + " disconnected");
+    });
+
+    socket.on('loggedin', function(data) {
+        console.log(uname + " logged in.");
     });
 });
 
 // Console will print the message
-console.log('Server running');
+console.log('Server running at port: '+port);
