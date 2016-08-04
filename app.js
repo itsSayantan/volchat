@@ -12,24 +12,6 @@ function onRequest(request, response) {
             response.write(data);
             response.end();
         });
-    }else if(request.method == "GET" && request.url == "/jquery.min.js"){
-        fs.readFile("jquery.min.js", 'utf-8', function (error, data) {
-            response.writeHead(200, {'Content-Type': 'text/js'});
-            response.write(data);
-            response.end();
-        });
-    }else if(request.method == "GET" && request.url == "/bootstrap.min.js"){
-        fs.readFile("bootstrap.min.js", 'utf-8', function (error, data) {
-            response.writeHead(200, {'Content-Type': 'text/js'});
-            response.write(data);
-            response.end();
-        });
-    }else if(request.method == "GET" && request.url == "/bootstrap.min.css"){
-        fs.readFile("bootstrap.min.css", 'utf-8', function (error, data) {
-            response.writeHead(200, {'Content-Type': 'text/css'});
-            response.write(data);
-            response.end();
-        });
     }else if(request.method == "GET" && request.url == "/client.js"){
         fs.readFile("client.js", 'utf-8', function (error, data) {
             response.writeHead(200, {'Content-Type': 'text/js'});

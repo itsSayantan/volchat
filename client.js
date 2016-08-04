@@ -1,4 +1,4 @@
-var socketio = io.connect("127.0.0.1:3000"),
+var socketio = io.connect("https://vol-chat.herokuapp.com"),
     uname,
     loggedin = 0;
 
