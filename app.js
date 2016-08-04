@@ -6,15 +6,39 @@ var http = require("http"),
     port = process.env.PORT || 3000;
 
 function onRequest(request, response) {
-    if(request.method == "GET" && request.url == "/chat"){
-        fs.readFile("chat.html", 'utf-8', function (error, data) {
+    if(request.method == "GET" && request.url == "/"){
+        fs.readFile("index.html", 'utf-8', function (error, data) {
             response.writeHead(200, {'Content-Type': 'text/html'});
             response.write(data);
             response.end();
         });
-    }else if(request.method == "GET" && request.url == "/"){
-        fs.readFile("index.html", 'utf-8', function (error, data) {
-            response.writeHead(200, {'Content-Type': 'text/html'});
+    }else if(request.method == "GET" && request.url == "/jquery.min.js"){
+        fs.readFile("jquery.min.js", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/js'});
+            response.write(data);
+            response.end();
+        });
+    }else if(request.method == "GET" && request.url == "/bootstrap.min.js"){
+        fs.readFile("bootstrap.min.js", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/js'});
+            response.write(data);
+            response.end();
+        });
+    }else if(request.method == "GET" && request.url == "/bootstrap.min.css"){
+        fs.readFile("bootstrap.min.css", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/css'});
+            response.write(data);
+            response.end();
+        });
+    }else if(request.method == "GET" && request.url == "/client.js"){
+        fs.readFile("client.js", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/js'});
+            response.write(data);
+            response.end();
+        });
+    }else if(request.method == "GET" && request.url == "/style.css"){
+        fs.readFile("style.css", 'utf-8', function (error, data) {
+            response.writeHead(200, {'Content-Type': 'text/css'});
             response.write(data);
             response.end();
         });
@@ -48,7 +72,6 @@ io.sockets.on('connection', function(socket) {
     console.log(uname + " connected");
 
     socket.on('avail_stat_chk', function(data) {
-
         var msg;
         uname = data["uname"];
 
@@ -68,8 +91,8 @@ io.sockets.on('connection', function(socket) {
         }else{
             un.push(uname);
             msg = "Username successfully created: <span style = 'color:green;'>"+uname+"</span>";
-            io.sockets.in(uname).emit("loggedin_event_fetch",{"msg": "loggedin"});
             io.sockets.in(uname).emit("avail_stat",{ "message": msg });
+            io.sockets.in(uname).emit("loggedin_event_fetch",{"msg": "loggedin"});
         }
     });
 
@@ -82,6 +105,45 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('loggedin', function(data) {
         console.log(uname + " logged in.");
+
+        uname = data["uname"];
+
+        socket.join(uname);
+
+        var msg = "<div class = 'message usrcon'><b>" + uname + "</b> logged in.</div>";
+
+        io.sockets.in(uname).emit("loginmsg",{ "message": msg });
+    });
+
+    socket.on('chatChk', function(data) {
+        uname = data["uname"];
+        var utext = data["utext"],
+            mtext = data["mtext"],
+            ok = 0;
+
+        socket.join(uname);
+
+        for (var i = 0; i < un.length; i++) {
+            if(un[i] == utext){
+                //success
+                ok=1;
+                break;
+            }
+        };
+
+        if(ok){
+            ok=0;
+
+            var msg = "<div class = 'message'><b class = 'u1'>" + uname + ":</b> " + mtext + "</div>";
+            io.sockets.in(uname).emit("chatsuc",{ "message": msg });
+
+            msg = "<div class = 'message'><b class = 'u2'>" + uname + ":</b> " + mtext + "</div>";
+            io.sockets.in(utext).emit("chatsuc",{ "message": msg });
+        }else{
+            var msg = "<div class = 'message nouser'><b>" + utext + "</b> is not logged in at this moment.</div>";
+
+            io.sockets.in(uname).emit("usrfail",{ "message": msg });
+        }
     });
 });
 
