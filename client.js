@@ -77,15 +77,12 @@ socketio.on("loggedin_event_fetch", function(data) {
 	socketio.emit("loggedin", { "uname" : uname});
 
 	var chatPageText = '<div class = "container-fluid">';
-	chatPageText+= '<div class = "alert alert-info">Logged in as: <b id = "user">' + uname + '</b></div>';
-	chatPageText+= '<div class = "cont">';
 	chatPageText+= '<input type = "text" placeholder = "To" class = "usr_field" id = "usr_field">';
 	chatPageText+= '<div class = "chat_sec" id = "chat_sec">';
 	chatPageText+= '<div id = "msg_wrap" class = "msg-wrap">';
 	chatPageText+= '</div>';
 	chatPageText+= '</div>';
 	chatPageText+= '<input type = "text" placeholder = "Message" class = "msg_field" id = "msg_field">';
-	chatPageText+= '</div>';
 	chatPageText+= '</div>';
 
 	document.getElementById("body").innerHTML = chatPageText;
