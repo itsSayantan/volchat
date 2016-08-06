@@ -57,8 +57,6 @@ io.sockets.on('connection', function(socket) {
         var msg;
         uname = data["uname"];
 
-        socket.join(uname);
-
         uname = htmlencode(uname);
         for (var i = 0; i < un.length; i++) {
                 if(uname == un[i]){
@@ -73,6 +71,8 @@ io.sockets.on('connection', function(socket) {
         }else{
             un.push(uname);
             msg = "Username successfully created: <span style = 'color:green;'>"+uname+"</span>";
+            
+            socket.join(uname);
             io.sockets.in(uname).emit("avail_stat",{ "message": msg });
             io.sockets.in(uname).emit("loggedin_event_fetch",{"msg": "loggedin"});
         }
