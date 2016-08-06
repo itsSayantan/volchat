@@ -67,6 +67,8 @@ io.sockets.on('connection', function(socket) {
         if(uTaken){
             msg = "<span style = 'color:red;'>"+uname+"</span> is taken. Try again.<div>If you are already logged in with this id, then you are probably receiving this message because someone else is trying to log in with this id. Please ignore.</div>";
             uTaken = 0;
+            
+            socket.join(uname);
             io.sockets.in(uname).emit("avail_stat",{ "message": msg });
         }else{
             un.push(uname);
