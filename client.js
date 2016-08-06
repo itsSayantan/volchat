@@ -21,10 +21,6 @@ function hasLowerCaseNum(str) {
 	return 1;
 }
 
-function bottom(chatsec){
-	document.getElementById(chatsec).scrollTop = document.getElementById(chatsec).scrollHeight;
-}
-
 function updateChat(str){
 	document.getElementById("msg_wrap").innerHTML += str;
 	
@@ -128,6 +124,7 @@ window.onkeyup = function(e){
 
 socketio.on("chatsuc", function(data) {
 	updateChat(data["message"]);
+	document.getElementById("msg_field").value = "";
 });
 
 socketio.on("usrfail", function(data) {
