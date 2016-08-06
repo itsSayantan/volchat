@@ -70,6 +70,7 @@ io.sockets.on('connection', function(socket) {
             
             socket.join(uname);
             io.sockets.in(uname).emit("avail_stat",{ "message": msg });
+            socket.leave(uname);
         }else{
             un.push(uname);
             msg = "Username successfully created: <span style = 'color:green;'>"+uname+"</span>";
