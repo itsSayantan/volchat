@@ -112,6 +112,7 @@ window.onkeyup = function(e){
 			    }else{
 			    	if(utext != uname){
 			    		socketio.emit("chatChk", { "uname" : uname, "utext" : utext, "mtext" : mtext});
+			    		document.getElementById("msg_field").value = "";
 			    	}else{
 			    		msg = "<div class = 'message err'>You cannot send a message to yourself. Try with another valid username. Make sure the person you are talking to is online at the moment</div>";
 			    		updateChat(msg);
@@ -124,7 +125,6 @@ window.onkeyup = function(e){
 
 socketio.on("chatsuc", function(data) {
 	updateChat(data["message"]);
-	document.getElementById("msg_field").value = "";
 });
 
 socketio.on("usrfail", function(data) {
